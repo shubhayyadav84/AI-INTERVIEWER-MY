@@ -7,7 +7,7 @@
     "start": "node api/index.js",
     "dev": "vite",
     "server": "node api/index.js",
-    "build": "npm install --prefix api && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

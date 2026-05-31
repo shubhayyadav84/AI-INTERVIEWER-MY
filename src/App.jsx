@@ -9,7 +9,10 @@ import HistoryPage from './pages/history'
 import PricingPage from './pages/pricing'
 import axios from 'axios'
 
-export const serverurl = import.meta.env.VITE_SERVER_URL || "http://localhost:8000"
+// Empty in production: frontend + API share the same host on Vercel
+export const serverurl =
+  import.meta.env.VITE_SERVER_URL ??
+  (import.meta.env.PROD ? "" : "http://localhost:8000")
 
 function App() {
   const { user, loading, theme } = useSelector((state) => state.user)

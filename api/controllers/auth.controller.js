@@ -2,6 +2,13 @@ import genToken from "../config/token.js"
 import User from "../models/usermodel.js"
 import bcrypt from "bcryptjs"
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.VERCEL ? "lax" : process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+}
+
 export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body
@@ -29,12 +36,7 @@ export const register = async (req, res) => {
                 await existingUser.save()
 
                 const token = await genToken(existingUser._id)
-                res.cookie("token", token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                })
+                res.cookie("token", token, cookieOptions)
 
                 return res.status(200).json({
                     _id: existingUser._id,
@@ -60,12 +62,7 @@ export const register = async (req, res) => {
 
         const token = await genToken(user._id)
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        })
+        res.cookie("token", token, cookieOptions)
 
         return res.status(201).json({
             _id: user._id,
@@ -107,12 +104,7 @@ export const login = async (req, res) => {
 
         const token = await genToken(user._id)
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        })
+        res.cookie("token", token, cookieOptions)
 
         return res.status(200).json({
             _id: user._id,
@@ -131,9 +123,9 @@ export const login = async (req, res) => {
 export const logOut = async (req, res) => {
     try {
         res.clearCookie("token", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+            httpOnly: cookieOptions.httpOnly,
+            secure: cookieOptions.secure,
+            sameSite: cookieOptions.sameSite,
         })
         return res.status(200).json({ message: "Logged out successfully" })
     } catch (error) {

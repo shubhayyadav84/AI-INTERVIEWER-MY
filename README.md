@@ -1,16 +1,47 @@
-# React + Vite
+# AI Interviewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Full-stack AI mock interview app (React + Vite frontend, Express API in `/api`).
 
-Currently, two official plugins are available:
+Deploy **frontend and backend together** on [Vercel](https://vercel.com) — no separate Render server needed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Deploy on Vercel (recommended)
 
-## React Compiler
+1. Push this repo to GitHub: [AI-INTERVIEWER-MY](https://github.com/shubhayyadav84/AI-INTERVIEWER-MY)
+2. Go to [vercel.com/new](https://vercel.com/new) → **Import** the repository
+3. Framework preset: **Vite** (auto-detected)
+4. Add **Environment Variables** from [`.env.example`](.env.example):
+   - `MONGODB_URL`
+   - `JWT_SECRET`
+   - `OPENROUTER_API_KEY`
+   - `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` (if using payments)
+   - `FRONTEND_URL` = your Vercel URL (e.g. `https://ai-interviewer-my.vercel.app`)
+5. Deploy
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The API runs at `/api/*` on the same domain as the UI (`vercel.json` routes are already configured).
 
-## Expanding the ESLint configuration
+## Run locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+Create `api/.env` from `.env.example`, then in **two terminals**:
+
+```bash
+# Terminal 1 — API
+npm run server
+
+# Terminal 2 — frontend
+npm run dev
+```
+
+Open http://localhost:5173 (API default: http://localhost:8000).
+
+## Scripts
+
+| Command        | Description              |
+|----------------|--------------------------|
+| `npm run dev`  | Vite dev server          |
+| `npm run server` | Express API (port 8000) |
+| `npm run build` | Production frontend build |
+| `npm start`    | API only (local/production server) |

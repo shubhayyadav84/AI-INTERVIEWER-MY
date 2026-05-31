@@ -3,8 +3,17 @@ import { neon } from "@neondatabase/serverless"
 let sql = null
 let schemaReady = false
 
+function getDatabaseUrl() {
+    const url = process.env.DATABASE_URL || process.env.POSTGRES_URL
+    if (!url) return null
+    // channel_binding can break some serverless runtimes
+    return url
+        .replace(/([?&])channel_binding=[^&]*&?/g, "$1")
+        .replace(/[?&]$/, "")
+}
+
 export function getSql() {
-    const url = process.env.DATABASE_URL
+    const url = getDatabaseUrl()
     if (!url) {
         throw new Error("DATABASE_URL is not set")
     }
@@ -67,7 +76,7 @@ async function initSchema() {
 }
 
 export async function connectDb() {
-    if (!process.env.DATABASE_URL) {
+    if (!getDatabaseUrl()) {
         console.error("DATABASE_URL is not set")
         return null
     }

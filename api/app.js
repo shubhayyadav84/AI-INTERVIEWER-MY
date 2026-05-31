@@ -76,28 +76,26 @@ app.use(async (req, res, next) => {
     next()
 })
 
-const mountApi = (segment, router) => {
-    app.use(`/api${segment}`, router)
-    app.use(segment, router)
-}
-
-mountApi("/auth", authRouter)
-mountApi("/user", userRouter)
-mountApi("/interview", interviewRouter)
-mountApi("/payment", paymentRouter)
+app.use("/api/auth", authRouter)
+app.use("/api/user", userRouter)
+app.use("/api/interview", interviewRouter)
+app.use("/api/payment", paymentRouter)
 
 const healthHandler = async (_req, res) => {
-    const db = await connectDb()
-    res.status(db ? 200 : 503).json({
-        ok: !!db,
-        db: !!db,
-        hasJwt: !!process.env.JWT_SECRET,
-        hasDb: !!process.env.DATABASE_URL,
-    })
+    try {
+        const db = await connectDb()
+        res.status(db ? 200 : 503).json({
+            ok: !!db,
+            db: !!db,
+            hasJwt: !!process.env.JWT_SECRET,
+            hasDb: !!process.env.DATABASE_URL,
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
 }
 
 app.get("/api/health", healthHandler)
-app.get("/health", healthHandler)
 
 app.use((err, _req, res, next) => {
     if (err?.message === "Not allowed by CORS") {
@@ -109,15 +107,5 @@ app.use((err, _req, res, next) => {
     }
     next(err)
 })
-
-connectDb().catch((err) => console.error("Initial DB connect:", err.message))
-
-const PORT = process.env.PORT || 5000
-
-if (!process.env.VERCEL) {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`)
-    })
-}
 
 export default app

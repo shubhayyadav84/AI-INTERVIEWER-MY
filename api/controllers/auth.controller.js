@@ -20,6 +20,30 @@ export const register = async (req, res) => {
 
         const existingUser = await User.findOne({ email })
         if (existingUser) {
+            // If old user from Google OAuth exists without a password, update them
+            if (!existingUser.password) {
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(password, salt)
+                existingUser.password = hashedPassword
+                existingUser.name = name
+                await existingUser.save()
+
+                const token = await genToken(existingUser._id)
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                })
+
+                return res.status(200).json({
+                    _id: existingUser._id,
+                    name: existingUser.name,
+                    email: existingUser.email,
+                    credits: existingUser.credits
+                })
+            }
+
             return res.status(400).json({
                 message: "An account with this email already exists"
             })

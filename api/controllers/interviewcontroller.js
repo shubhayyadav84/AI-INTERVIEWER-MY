@@ -1,5 +1,4 @@
 import fs from "fs"
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs"
 import { askAi } from "../services/openrouterservice.js"
 import * as Interview from "../db/interviewRepository.js"
 
@@ -13,6 +12,7 @@ export const analyzeResume = async (req, res) => {
         const fileBuffer = await fs.promises.readFile(filepath)
         const uint8Array = new Uint8Array(fileBuffer)
 
+        const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs")
         const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise
         let resumeText = ""
 

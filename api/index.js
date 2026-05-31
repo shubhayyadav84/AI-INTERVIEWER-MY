@@ -110,7 +110,7 @@ app.use((err, _req, res, next) => {
     next(err)
 })
 
-connectDb()
+connectDb().catch((err) => console.error("Initial DB connect:", err.message))
 
 const PORT = process.env.PORT || 5000
 
